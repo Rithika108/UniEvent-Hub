@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniCollege Event</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">UH</div>
+        <div>
+          <span class="brand-title">UniEvent Hub</span>
+          <span class="brand-sub">Connect · Plan · Collaborate</span>
+        </div>
+      </div>
+
+      <div class="sidebar-profile">
+        <div class="sidebar-avatar">R</div>
+        <div class="sidebar-user">
+          <span class="sidebar-name">User</span>
+          <span class="sidebar-role">Role</span>
+        </div>
+      </div>
+
+      <div class="sidebar-stats">
+        <div class="stat-mini">
+          <span class="stat-number" id="liked-count">0</span>
+          <span class="stat-label">Liked</span>
+        </div>
+        <div class="stat-mini">
+          <span class="stat-number" id="registered-count">0</span>
+          <span class="stat-label">Events</span>
+        </div>
+        <div class="stat-mini">
+          <span class="stat-number" id="messages-count">3</span>
+          <span class="stat-label">Msgs</span>
+        </div>
+      </div>
+
+      <nav class="menu">
+        <a class="menu-item active" href="#home" data-tooltip="Home">
+          <span class="menu-icon">🏠</span>
+          <span class="menu-text">Home</span>
+          <div class="menu-glow"></div>
+        </a>
+        <a class="menu-item" href="#discover" data-tooltip="Discover">
+          <span class="menu-icon">🔎</span>
+          <span class="menu-text">Explore</span>
+          <div class="menu-glow"></div>
+        </a>
+        <a class="menu-item" href="#colleges" data-tooltip="Colleges">
+          <span class="menu-icon">🎓</span>
+          <span class="menu-text">Colleges</span>
+          <div class="menu-glow"></div>
+        </a>
+        <a class="menu-item" href="#map" data-tooltip="Map">
+          <span class="menu-icon">📍</span>
+          <span class="menu-text">Map</span>
+          <div class="menu-glow"></div>
+        </a>
+        <a class="menu-item notifications" href="#notifications" data-tooltip="Notifications">
+          <span class="menu-icon">🔔</span>
+          <span class="menu-text">Notifications</span>
+          <span class="notification-badge" id="notification-badge">2</span>
+          <div class="menu-glow"></div>
+        </a>
+        <a class="menu-item messages" href="#messages" data-tooltip="Messages">
+          <span class="menu-icon">💬</span>
+          <span class="menu-text">Messages</span>
+          <span class="notification-badge" id="message-badge">1</span>
+          <div class="menu-glow"></div>
+        </a>
+        <a class="menu-item" href="#profile" data-tooltip="Profile">
+          <span class="menu-icon">🧑</span>
+          <span class="menu-text">Profile</span>
+          <div class="menu-glow"></div>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="theme-toggle" id="theme-toggle" data-tooltip="Toggle Theme">🌙</button>
+        <button class="logout-btn" id="logout-btn" data-tooltip="Logout">🚪</button>
+        <div class="sidebar-decoration">
+          <div class="decoration-dot"></div>
+          <div class="decoration-dot"></div>
+          <div class="decoration-dot"></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <section class="hero" id="home">
+        <div class="hero-card">
+          <div class="hero-logo">UH</div>
+          <div class="hero-copy">
+            <h1>Discover College Events Across Tamil Nadu</h1>
+            <p>Find curated tech fests, cultural galas, hackathons, and workshops in Tamil Nadu's top universities.</p>
+            <div class="hero-actions">
+              <a class="btn primary" href="#discover">Get Started</a>
+              <a class="btn secondary" href="#map">View Map</a>
+            </div>
+            <div class="hero-stats">
+              <div class="stat-card">
+                <span>150+</span>
+                <p>Colleges onboarded</p>
+              </div>
+              <div class="stat-card">
+                <span>4200+</span>
+                <p>Events listed</p>
+              </div>
+              <div class="stat-card">
+                <span>98%</span>
+                <p>Student satisfaction</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="discover" id="discover">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Discover Colleges</p>
+            <h2>Follow colleges to see their events automatically in your feed</h2>
+          </div>
+          <a class="btn secondary" href="#all-colleges">Explore Colleges</a>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="search-input" placeholder="Search colleges, events, or locations...">
+          <button id="search-btn">🔍</button>
+        </div>
+        <div class="feature-panel">
+          <div class="feature-block">
+            <div class="icon">🏛️</div>
+            <p>Top-ranked campuses</p>
+          </div>
+          <div class="feature-block">
+            <div class="icon">🎓</div>
+            <p>Live student events</p>
+          </div>
+          <div class="feature-block">
+            <div class="icon">🏠</div>
+            <p>Nearby opportunities</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="spotlight">
+        <div class="section-title">
+          <h3>Campus Spotlight</h3>
+          <a class="link" href="#all-colleges">See all colleges</a>
+        </div>
+        <div class="college-grid">
+          <article class="college-card blue">
+            <div class="college-tag">Top Pick</div>
+            <button class="like-btn" data-college="IIT Madras">❤️</button>
+            <h4>IIT Madras</h4>
+            <p>Engineering excellence, tech fests, and innovation hubs.</p>
+          </article>
+          <article class="college-card purple">
+            <div class="college-tag">New</div>
+            <button class="like-btn" data-college="Avinashilingam University">❤️</button>
+            <h4>Avinashilingam University</h4>
+            <p>Research symposiums, cultural events, and leadership programs.</p>
+          </article>
+          <article class="college-card green">
+            <div class="college-tag">Popular</div>
+            <button class="like-btn" data-college="NIT Trichy">❤️</button>
+            <h4>NIT Trichy</h4>
+            <p>Sports meets, hackathons, and community festivals.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="events" id="colleges">
+        <div class="section-title">
+          <h3>Discover Events</h3>
+          <a class="link" href="#all-events">See All</a>
+        </div>
+
+        <div class="event-chips">
+          <div class="chip">Tech Fest</div>
+          <div class="chip">Cultural Fest</div>
+          <div class="chip">Sports Meet</div>
+          <div class="chip">Workshops</div>
+          <div class="chip">Networking</div>
+        </div>
+
+        <div class="event-grid" id="discover-event-grid">
+          <div class="event-list" id="event-list">
+            <div class="empty-state">Loading events...</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="map-section" id="map">
+        <div class="section-header simple">
+          <h2>Event Near You</h2>
+        </div>
+
+        <div class="map-panel">
+          <div class="map-graphic" id="college-map"></div>
+          <div class="nearby-list" id="map-list">
+            <div class="empty-state">Loading map markers...</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="notifications" id="notifications">
+        <div class="section-title">
+          <h3>Notifications</h3>
+          <a class="link" href="#">Mark all read</a>
+        </div>
+        <div class="notification-list" id="notifications-list">
+          <div class="empty-state">No notifications yet.</div>
+        </div>
+      </section>
+
+      <section class="messages" id="messages">
+        <div class="section-title">
+          <h3>Messages</h3>
+          <div>
+            <a class="link" href="#all-messages" style="margin-right: 12px;">See All</a>
+            <a class="link" href="#new-message">New message</a>
+          </div>
+        </div>
+        <div class="message-list">
+          <article class="message-item">
+            <div class="message-avatar">AU</div>
+            <div>
+              <h4>Avinashilingam University Admin</h4>
+              <p>Hi! Your event proposal has been approved. Let's discuss details.</p>
+              <span class="message-time">10:30 AM</span>
+            </div>
+          </article>
+          <article class="message-item">
+            <div class="message-avatar">IM</div>
+            <div>
+              <h4>IIT Madras Team</h4>
+              <p>Thank you for registering for Hackathon 2026. Check your email for details.</p>
+              <span class="message-time">Yesterday</span>
+            </div>
+          </article>
+          <article class="message-item">
+            <div class="message-avatar">NT</div>
+            <div>
+              <h4>NIT Trichy Events</h4>
+              <p>Don't miss our Startup Expo next week!</p>
+              <span class="message-time">2 days ago</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="profile" id="profile">
+        <div class="section-title">
+          <h3>Profile</h3>
+          <a class="link" href="#">Edit profile</a>
+        </div>
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar" id="profile-avatar">U</div>
+            <div>
+              <h4 id="profile-name">User Name</h4>
+              <p id="profile-headline">Student at your college</p>
+            </div>
+          </div>
+          <div class="profile-stats">
+            <div class="stat">
+              <span id="profile-events">0</span>
+              <p>Events attended</p>
+            </div>
+            <div class="stat">
+              <span id="profile-followers">0</span>
+              <p>Followers</p>
+            </div>
+            <div class="stat">
+              <span id="profile-connections">0</span>
+              <p>Connections</p>
+            </div>
+          </div>
+          <div class="profile-details">
+            <div class="detail-item">
+              <span>📧</span>
+              <p id="profile-email">email@example.com</p>
+            </div>
+            <div class="detail-item">
+              <span>📱</span>
+              <p id="profile-phone">+91 00000 00000</p>
+            </div>
+            <div class="detail-item">
+              <span>🏠</span>
+              <p id="profile-location">City, State</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="all-colleges" id="all-colleges">
+        <div class="section-title">
+          <h3>All Colleges</h3>
+        </div>
+        <div class="college-grid expanded" id="college-list">
+          <div class="empty-state">Loading colleges...</div>
+        </div>
+      </section>
+
+      <section class="all-events" id="all-events">
+        <div class="section-title">
+          <h3>All Events</h3>
+        </div>
+        <div class="event-chips">
+          <div class="chip">Tech Fest</div>
+          <div class="chip">Cultural Fest</div>
+          <div class="chip">Sports Meet</div>
+          <div class="chip">Workshops</div>
+          <div class="chip">Networking</div>
+          <div class="chip">Conferences</div>
+        </div>
+        <div class="event-list expanded" id="all-event-list">
+          <div class="empty-state">Loading all events...</div>
+        </div>
+      </section>
+
+      <section class="all-messages" id="all-messages">
+        <div class="section-title">
+          <h3>All Messages</h3>
+        </div>
+        <div class="message-list expanded">
+          <article class="message-item">
+            <div class="message-avatar">AU</div>
+            <div>
+              <h4>Avinashilingam University Admin</h4>
+              <p>Hi! Your event proposal has been approved. Let's discuss details.</p>
+              <span class="message-time">10:30 AM</span>
+            </div>
+          </article>
+          <article class="message-item">
+            <div class="message-avatar">IM</div>
+            <div>
+              <h4>IIT Madras Team</h4>
+              <p>Thank you for registering for Hackathon 2026. Check your email for details.</p>
+              <span class="message-time">Yesterday</span>
+            </div>
+          </article>
+          <article class="message-item">
+            <div class="message-avatar">NT</div>
+            <div>
+              <h4>NIT Trichy Events</h4>
+              <p>Don't miss our Startup Expo next week!</p>
+              <span class="message-time">2 days ago</span>
+            </div>
+          </article>
+          <article class="message-item">
+            <div class="message-avatar">PC</div>
+            <div>
+              <h4>PSG College Admin</h4>
+              <p>Invitation to our upcoming Tech Conference. RSVP required.</p>
+              <span class="message-time">3 days ago</span>
+            </div>
+          </article>
+          <article class="message-item">
+            <div class="message-avatar">CI</div>
+            <div>
+              <h4>CIT Events Team</h4>
+              <p>Join us for the annual Sports Meet this weekend!</p>
+              <span class="message-time">1 week ago</span>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <button class="floating-btn" id="add-event-btn" data-tooltip="Add New Event">+</button>
+
+  <!-- Add Event Modal -->
+  <div class="modal" id="add-event-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Event</h3>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <form class="event-form" id="event-form">
+        <div class="form-group">
+          <label for="event-title">Event Title</label>
+          <input type="text" id="event-title" required placeholder="e.g., Tech Workshop 2026">
+        </div>
+        <div class="form-group">
+          <label for="event-college">College/Organization</label>
+          <input type="text" id="event-college" required placeholder="e.g., IIT Madras">
+        </div>
+        <div class="form-group">
+          <label for="event-location">Location</label>
+          <input type="text" id="event-location" required placeholder="e.g., Chennai">
+        </div>
+        <div class="form-group">
+          <label for="event-date">Date</label>
+          <input type="date" id="event-date" required>
+        </div>
+        <div class="form-group">
+          <label for="event-description">Description</label>
+          <textarea id="event-description" rows="3" placeholder="Brief description of the event"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="event-registration-link">Registration Link</label>
+          <input type="url" id="event-registration-link" placeholder="https://example.com/register-your-event" required>
+        </div>
+        <div class="form-group">
+          <label for="event-type">Event Type</label>
+          <select id="event-type">
+            <option value="Tech Fest">Tech Fest</option>
+            <option value="Cultural Fest">Cultural Fest</option>
+            <option value="Sports Meet">Sports Meet</option>
+            <option value="Workshops">Workshops</option>
+            <option value="Networking">Networking</option>
+            <option value="Conferences">Conferences</option>
+          </select>
+        </div>
+        <button type="submit" class="btn primary full-width">Add Event</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

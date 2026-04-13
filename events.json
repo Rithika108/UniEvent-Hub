@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Flutter with AI 2026",
+    "college": "KPR Institute of Engineering and Technology",
+    "location": "Coimbatore",
+    "date": "2026-04-15",
+    "description": "Workshop on Flutter and AI",
+    "type": "Technical",
+    "registrationLink": "https://docs.google.com/forms/d/e/1FAIpQLSfynbVLVYpc3GpqFZbKjsHqurhimX2QFMypU7CwOpHr2kpnrA/viewform"
+  },
+  {
+    "title": "Technical Symposium 2026",
+    "college": "PA College of Engineering and Technology",
+    "location": "Coimbatore",
+    "date": "2026-04-16",
+    "description": "Technical events and competitions",
+    "type": "Technical",
+    "registrationLink": "https://docs.google.com/forms/d/e/1FAIpQLSfhoO1KRHH7G11Nvpc1b7U1UWgMmADiXACX_t7_n-KiEWPCUg/viewform"
+  },
+  {
+    "title": "Startup & Innovation Expo",
+    "college": "Dhaanish Ahmed Institute of Technology",
+    "location": "Coimbatore",
+    "date": "2026-04-16",
+    "description": "Entrepreneurship and startup showcase",
+    "type": "Business",
+    "registrationLink": "https://dhaanish.com/"
+  },
+  {
+    "title": "Agri Tech Training 2026",
+    "college": "Tamil Nadu Agricultural University",
+    "location": "Coimbatore",
+    "date": "2026-05-19",
+    "description": "Training in plant tissue culture",
+    "type": "Training",
+    "registrationLink": "https://docs.google.com/forms/d/e/1FAIpQLSchDPc8hpj8WSznNkn3sDxNDTc_rJuMoT9gu_IWlMoDfPMOYg/viewform"
+  }
+]
