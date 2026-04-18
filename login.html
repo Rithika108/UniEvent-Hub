@@ -419,7 +419,14 @@ button.submit-btn:active {
 </div>
 
 <script>
-const baseURL = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
+function getBaseURL() {
+  if (window.location.protocol === 'file:') {
+    return 'http://localhost:3000';
+  }
+  return `${window.location.protocol}//${window.location.host}`;
+}
+
+const baseURL = getBaseURL();
 
 // ============ TOGGLE BETWEEN LOGIN & SIGNUP ============
 function switchToLogin() {
@@ -611,7 +618,7 @@ async function handleSignup(event) {
       };
     }
 
-    const baseURL = window.location.protocol === 'file:' ? 'http://localhost:3000' : `${window.location.protocol}//${window.location.host}`;
+    const baseURL = getBaseURL();
     const endpoint = role === 'student' ? `${baseURL}/api/student-signup` : `${baseURL}/api/faculty-signup`;
 
     const response = await fetch(endpoint, {
@@ -643,7 +650,7 @@ async function handleSignup(event) {
     } catch (error) {
       console.error('Signup error:', error);
       if (window.location.protocol === 'file:') {
-        showError('signupGeneralError', 'Please open this page through http://localhost:7000/login.html and start the Node.js server first.');
+        showError('signupGeneralError', `Please open this page through ${getBaseURL()}/login.html and start the Node.js server first.`);
       } else {
         showError('signupGeneralError', 'Signup failed. Please try again.');
       }

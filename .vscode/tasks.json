@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "npm:start",
+            "type": "shell",
+            "command": "npm start",
+            "problemMatcher": ["$tsc-watch"],
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "type": "npm",
+            "script": "dev",
+            "problemMatcher": ["$tsc-watch"],
+            "label": "npm: dev",
+            "detail": "node server.js"
+        },
+        {
+            "type": "npm",
+            "script": "start",
+            "problemMatcher": ["$tsc-watch"],
+            "label": "npm: start",
+            "detail": "node server.js"
+        }
+    ]
+}

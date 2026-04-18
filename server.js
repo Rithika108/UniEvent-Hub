@@ -6,11 +6,11 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 
-const Student = require('./models/student');
-const Faculty = require('./models/faculty');
-const User = require('./models/user');
-const Event = require('./models/event');
-const College = require('./models/college');
+const Student = require('./student');
+const Faculty = require('./faculty');
+const User = require('./user');
+const Event = require('./event');
+const College = require('./college');
 const seedEvents = require('./events.json');
 
 const app = express();

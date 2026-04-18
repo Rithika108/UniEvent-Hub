@@ -126,24 +126,47 @@
             <p class="eyebrow">Discover Colleges</p>
             <h2>Follow colleges to see their events automatically in your feed</h2>
           </div>
-          <a class="btn secondary" href="#all-colleges">Explore Colleges</a>
         </div>
         <div class="search-bar">
           <input type="text" id="search-input" placeholder="Search colleges, events, or locations...">
           <button id="search-btn">🔍</button>
         </div>
+        <div class="search-results" id="search-results" style="display: none;">
+          <div class="search-results-inner">
+            <h3 style="margin: 0; flex: 1;">Search Results</h3>
+            <button type="button" id="close-results" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #64748b;">✕</button>
+          </div>
+          <div class="colleges-results" id="colleges-search-results"></div>
+          <div class="events-results" id="events-search-results"></div>
+        </div>
         <div class="feature-panel">
-          <div class="feature-block">
+          <div class="feature-block" data-action="top-campuses">
             <div class="icon">🏛️</div>
             <p>Top-ranked campuses</p>
           </div>
-          <div class="feature-block">
+          <div class="feature-block" data-action="live-events">
             <div class="icon">🎓</div>
             <p>Live student events</p>
           </div>
-          <div class="feature-block">
+          <div class="feature-block" data-action="nearby-opportunities">
             <div class="icon">🏠</div>
             <p>Nearby opportunities</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="pulse-section" id="campus-pulse">
+        <div class="pulse-header">
+          <div>
+            <h3>Campus Pulse</h3>
+            <p>Discover the top colleges and hottest event hubs students are buzzing about right now.</p>
+          </div>
+          <button type="button" class="pulse-btn" id="pulse-refresh-btn">Refresh Pulse</button>
+        </div>
+        <div class="pulse-grid" id="pulse-grid">
+          <div class="pulse-card">
+            <h4>Loading trending colleges...</h4>
+            <p>Please wait while the campus pulse finds the latest hotspots.</p>
           </div>
         </div>
       </section>
@@ -151,26 +174,46 @@
       <section class="spotlight">
         <div class="section-title">
           <h3>Campus Spotlight</h3>
-          <a class="link" href="#all-colleges">See all colleges</a>
         </div>
         <div class="college-grid">
-          <article class="college-card blue">
+          <article class="college-card blue navy-gradient">
             <div class="college-tag">Top Pick</div>
             <button class="like-btn" data-college="IIT Madras">❤️</button>
-            <h4>IIT Madras</h4>
-            <p>Engineering excellence, tech fests, and innovation hubs.</p>
+            <a class="college-card-link" href="https://www.iitm.ac.in" target="_blank" rel="noopener noreferrer" aria-label="Open IIT Madras official website in a new tab">
+              <div class="college-card-thumb">
+                <img src="./IIT Madras.jpg" alt="IIT Madras campus" loading="lazy" />
+              </div>
+              <div class="college-card-content">
+                <h4>IIT Madras</h4>
+                <p>Engineering excellence, tech fests, and innovation hubs.</p>
+              </div>
+            </a>
           </article>
           <article class="college-card purple">
             <div class="college-tag">New</div>
             <button class="like-btn" data-college="Avinashilingam University">❤️</button>
-            <h4>Avinashilingam University</h4>
-            <p>Research symposiums, cultural events, and leadership programs.</p>
+            <a class="college-card-link" href="https://avinashilingam.edu.in" target="_blank" rel="noopener noreferrer" aria-label="Open Avinashilingam University official website in a new tab">
+              <div class="college-card-thumb">
+                <img src="./Avinashilingam Univesity.jpg" alt="Avinashilingam University campus" loading="lazy" />
+              </div>
+              <div class="college-card-content">
+                <h4>Avinashilingam University</h4>
+                <p>Research symposiums, cultural events, and leadership programs.</p>
+              </div>
+            </a>
           </article>
           <article class="college-card green">
             <div class="college-tag">Popular</div>
             <button class="like-btn" data-college="NIT Trichy">❤️</button>
-            <h4>NIT Trichy</h4>
-            <p>Sports meets, hackathons, and community festivals.</p>
+            <a class="college-card-link" href="https://www.nitt.edu" target="_blank" rel="noopener noreferrer" aria-label="Open NIT Trichy official website in a new tab">
+              <div class="college-card-thumb">
+                <img src="./NIT.jpg" alt="NIT Trichy campus" loading="lazy" />
+              </div>
+              <div class="college-card-content">
+                <h4>NIT Trichy</h4>
+                <p>Sports meets, hackathons, and community festivals.</p>
+              </div>
+            </a>
           </article>
         </div>
       </section>
@@ -299,15 +342,6 @@
         </div>
       </section>
 
-      <section class="all-colleges" id="all-colleges">
-        <div class="section-title">
-          <h3>All Colleges</h3>
-        </div>
-        <div class="college-grid expanded" id="college-list">
-          <div class="empty-state">Loading colleges...</div>
-        </div>
-      </section>
-
       <section class="all-events" id="all-events">
         <div class="section-title">
           <h3>All Events</h3>
@@ -422,6 +456,16 @@
         </div>
         <button type="submit" class="btn primary full-width">Add Event</button>
       </form>
+    </div>
+  </div>
+
+  <div class="modal" id="detail-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="detail-title">Details</h3>
+        <button class="modal-close" id="detail-modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="detail-body"></div>
     </div>
   </div>
 

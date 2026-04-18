@@ -1,6 +1,10 @@
 ﻿const floatingBtn = document.getElementById('add-event-btn');
 const modal = document.getElementById('add-event-modal');
 const modalClose = document.getElementById('modal-close');
+const detailModal = document.getElementById('detail-modal');
+const detailModalClose = document.getElementById('detail-modal-close');
+const detailTitle = document.getElementById('detail-title');
+const detailBody = document.getElementById('detail-body');
 const eventForm = document.getElementById('event-form');
 const baseURL = window.location.protocol === 'file:' ? 'http://localhost:3000' : '';
 
@@ -12,6 +16,202 @@ let mapMarkers = [];
 let googleMapLoaded = false;
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
+
+let followedCollegeIds = JSON.parse(localStorage.getItem('followedColleges') || '[]');
+
+function saveFollowedColleges() {
+  localStorage.setItem('followedColleges', JSON.stringify(followedCollegeIds));
+}
+
+function isCollegeFollowed(collegeId) {
+  return followedCollegeIds.includes(collegeId);
+}
+
+function toggleCollegeFollow(collegeId) {
+  if (!collegeId) return;
+  const existingIndex = followedCollegeIds.indexOf(collegeId);
+  if (existingIndex === -1) {
+    followedCollegeIds.push(collegeId);
+    showNotification('College followed.');
+  } else {
+    followedCollegeIds.splice(existingIndex, 1);
+    showNotification('College unfollowed.');
+  }
+  saveFollowedColleges();
+  updateFollowButtons();
+}
+
+function updateFollowButtons() {
+  document.querySelectorAll('.follow-btn').forEach(btn => {
+    const collegeId = btn.getAttribute('data-college-id');
+    if (!collegeId) return;
+    const isFollowed = isCollegeFollowed(collegeId);
+    btn.textContent = isFollowed ? 'Following' : 'Follow';
+    btn.classList.toggle('followed', isFollowed);
+  });
+}
+
+function attachFollowListeners() {
+  document.querySelectorAll('.follow-btn').forEach(btn => {
+    btn.onclick = () => toggleCollegeFollow(btn.getAttribute('data-college-id'));
+  });
+}
+
+function performSearch(query) {
+  const normalized = String(query || '').trim().toLowerCase();
+  const searchResultsContainer = document.getElementById('search-results');
+  const collegesResultsContainer = document.getElementById('colleges-search-results');
+  const eventsResultsContainer = document.getElementById('events-search-results');
+
+  if (!normalized) {
+    searchResultsContainer.style.display = 'none';
+    renderEventListings(currentEvents);
+    renderCampusPulse();
+    return;
+  }
+
+  const filteredEvents = currentEvents.filter(event => {
+    const searchable = `${event.title || ''} ${event.college || ''} ${event.description || ''} ${event.location || ''} ${event.category || ''}`.toLowerCase();
+    return searchable.includes(normalized);
+  });
+
+  const filteredColleges = currentColleges.filter(college => {
+    const searchable = `${college.name || ''} ${college.city || ''} ${college.state || ''} ${college.description || ''}`.toLowerCase();
+    return searchable.includes(normalized);
+  });
+
+  // Show results container
+  searchResultsContainer.style.display = 'block';
+
+  // Render colleges results
+  if (filteredColleges.length > 0) {
+    collegesResultsContainer.innerHTML = '<h4>Colleges</h4>';
+    const collegesList = document.createElement('div');
+    collegesList.className = 'colleges-list';
+    filteredColleges.forEach(college => {
+      const card = document.createElement('div');
+      card.className = 'search-result-card';
+      card.innerHTML = `
+        <div class="result-content">
+          <h5>${college.name}</h5>
+          <p>${college.city}, ${college.state}</p>
+          <p class="result-desc">${college.description}</p>
+        </div>
+        <button class="result-action" data-college-id="${college._id}">Follow</button>
+      `;
+      collegesList.appendChild(card);
+    });
+    collegesResultsContainer.appendChild(collegesList);
+  } else {
+    collegesResultsContainer.innerHTML = '<p class="no-results">No colleges found for "' + query + '"</p>';
+  }
+
+  // Render events results
+  if (filteredEvents.length > 0) {
+    eventsResultsContainer.innerHTML = '<h4>Events</h4>';
+    const eventsList = document.createElement('div');
+    eventsList.className = 'events-list';
+    filteredEvents.forEach(event => {
+      const card = document.createElement('div');
+      card.className = 'search-result-card';
+      card.innerHTML = `
+        <div class="result-content">
+          <h5>${event.title}</h5>
+          <p>${event.college} · ${event.location}</p>
+          <p class="result-desc">${event.description}</p>
+          <p class="result-date">${formatDate(event.date)}</p>
+        </div>
+        <button class="result-action" data-event-id="${event._id}">Register</button>
+      `;
+      eventsList.appendChild(card);
+    });
+    eventsResultsContainer.appendChild(eventsList);
+  } else {
+    eventsResultsContainer.innerHTML = '<p class="no-results">No events found for "' + query + '"</p>';
+  }
+
+  // Attach event handlers to action buttons
+  searchResultsContainer.querySelectorAll('.result-action[data-college-id]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleCollegeFollow(btn.getAttribute('data-college-id'));
+      const collegeId = btn.getAttribute('data-college-id');
+      const isFollowed = isCollegeFollowed(collegeId);
+      btn.textContent = isFollowed ? 'Following' : 'Follow';
+      btn.classList.toggle('followed', isFollowed);
+    });
+  });
+
+  searchResultsContainer.querySelectorAll('.result-action[data-event-id]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const eventId = btn.getAttribute('data-event-id');
+      const event = currentEvents.find(e => e._id === eventId);
+      if (event) {
+        showDetailModal(event.title, getEventDetailHtml(event));
+      }
+    });
+  });
+}
+
+
+function getLiveStudentEvents() {
+  const now = new Date();
+  return currentEvents.filter(event => {
+    const eventDate = new Date(event.date);
+    return !Number.isNaN(eventDate.getTime()) && eventDate >= now;
+  });
+}
+
+function getNearbyOpportunities() {
+  const targetCity = (currentUser?.location || 'Coimbatore').toLowerCase();
+  const matches = currentEvents.filter(event => {
+    return [event.location, event.college]
+      .filter(Boolean)
+      .some(value => value.toLowerCase().includes(targetCity));
+  });
+  if (matches.length) return matches;
+  return currentEvents.filter(event => event.location?.toLowerCase().includes('coimbatore') || event.college?.toLowerCase().includes('coimbatore'));
+}
+
+function openMessageModal(messageElement) {
+  if (!messageElement) return;
+  const title = messageElement.querySelector('h4')?.textContent?.trim() || 'Message';
+  const description = messageElement.querySelector('p')?.textContent?.trim() || 'No message content available.';
+  const time = messageElement.querySelector('.message-time')?.textContent?.trim() || '';
+  const bodyHtml = `
+    <div class="detail-panel">
+      <p>${description}</p>
+      <ul class="detail-list">
+        ${time ? `<li><strong>Received:</strong> ${time}</li>` : ''}
+      </ul>
+    </div>
+  `;
+  showDetailModal(title, bodyHtml);
+}
+
+function initializeMessageInteractions() {
+  document.querySelectorAll('.message-item').forEach(item => {
+    item.addEventListener('click', () => openMessageModal(item));
+  });
+}
+
+function initializeFeatureActions() {
+  document.querySelectorAll('.feature-block').forEach(block => {
+    block.addEventListener('click', () => {
+      const action = block.getAttribute('data-action');
+      if (action === 'top-campuses') {
+        renderCollegeList(currentColleges.slice(0, 6));
+      } else if (action === 'live-events') {
+        renderEventListings(getLiveStudentEvents());
+        document.getElementById('colleges')?.scrollIntoView({ behavior: 'smooth' });
+      } else if (action === 'nearby-opportunities') {
+        renderEventListings(getNearbyOpportunities());
+        document.getElementById('map')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+}
 
 function getAuthHeaders() {
   const token = localStorage.getItem('token');
@@ -93,6 +293,10 @@ async function loadUser() {
     if (nameEl) nameEl.textContent = currentUser.name || 'User';
     if (roleEl) roleEl.textContent = currentUser.role || 'Member';
     if (avatarEl) avatarEl.textContent = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
+
+    // Show add event button only for logged in users
+    const floatingBtn = document.getElementById('add-event-btn');
+    if (floatingBtn) floatingBtn.style.display = 'block';
   } catch (error) {
     console.error('Error loading user:', error);
     const savedUser = JSON.parse(localStorage.getItem('user'));
@@ -100,7 +304,12 @@ async function loadUser() {
       currentUser = savedUser;
       updateSidebarStats();
       updateProfileUI();
+      const floatingBtn = document.getElementById('add-event-btn');
+      if (floatingBtn) floatingBtn.style.display = 'block';
     } else {
+      // Hide add event button for non-logged in users
+      const floatingBtn = document.getElementById('add-event-btn');
+      if (floatingBtn) floatingBtn.style.display = 'none';
       window.location.href = 'login.html';
     }
   }
@@ -223,6 +432,7 @@ function renderEventListings(events) {
     card.className = 'event-card';
     card.innerHTML = `
       <div class="event-label">${event.category || 'Event'}</div>
+      <div class="event-image"></div>
       <div class="event-info">
         <h4>${event.title}</h4>
         <p>${event.college}  ${event.location}</p>
@@ -230,10 +440,26 @@ function renderEventListings(events) {
       </div>
       <button class="register-btn" data-event-id="${event._id}">Register</button>
     `;
-    eventsContainer.appendChild(card);
+    const actions = document.createElement('div');
+  actions.className = 'event-actions';
+  const detailsBtn = document.createElement('button');
+  detailsBtn.className = 'details-btn';
+  detailsBtn.setAttribute('type', 'button');
+  detailsBtn.setAttribute('data-event-id', event._id);
+  detailsBtn.textContent = 'Details';
+
+  const registerBtn = card.querySelector('.register-btn');
+  if (registerBtn) {
+    actions.appendChild(detailsBtn);
+    actions.appendChild(registerBtn);
+    card.appendChild(actions);
+  }
+
+  eventsContainer.appendChild(card);
   });
 
   attachRegisterListeners();
+  attachDetailListeners();
 }
 
 function renderAllEvents(events) {
@@ -256,10 +482,25 @@ function renderAllEvents(events) {
       </div>
       <button class="register-btn small" data-event-id="${event._id}">Register</button>
     `;
+    const actions = document.createElement('div');
+    actions.className = 'event-actions';
+    const detailsBtn = document.createElement('button');
+    detailsBtn.className = 'details-btn small';
+    detailsBtn.setAttribute('type', 'button');
+    detailsBtn.setAttribute('data-event-id', event._id);
+    detailsBtn.textContent = 'Details';
+    const registerBtn = row.querySelector('.register-btn');
+    if (registerBtn) {
+      actions.appendChild(detailsBtn);
+      actions.appendChild(registerBtn);
+      row.appendChild(actions);
+    }
+
     allEventsContainer.appendChild(row);
   });
 
   attachRegisterListeners();
+  attachDetailListeners();
 }
 
 function renderCollegeList(colleges) {
@@ -274,15 +515,161 @@ function renderCollegeList(colleges) {
   collegeContainer.innerHTML = '';
   colleges.forEach(college => {
     const card = document.createElement('article');
-    card.className = 'college-card blue';
+    card.className = 'college-card blue college-card-horizontal';
     card.innerHTML = `
-      <div class="college-tag">${college.city || 'College'}</div>
-      <div>
-        <h4>${college.name}</h4>
-        <p>${college.city}, ${college.state}</p>
+      <div class="college-card-thumb">
+        <img src="${getCollegeImageUrl(college)}" alt="${college.name || 'College'} image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=College+Image'" />
+      </div>
+      <div class="college-card-main">
+        <div class="college-card-top-row">
+          <div class="college-tag">${college.city || 'College'}</div>
+        </div>
+        <div class="college-card-content">
+          <h4>${college.name || 'Unnamed College'}</h4>
+          <p>${college.city || 'Unknown City'}, ${college.state || 'Unknown State'}</p>
+          <p class="college-description">${college.description || 'Follow this college to discover its events and campus activities.'}</p>
+        </div>
       </div>
     `;
+
+    const actions = document.createElement('div');
+    actions.className = 'college-actions';
+
+    const detailsBtn = document.createElement('button');
+    detailsBtn.className = 'details-btn';
+    detailsBtn.setAttribute('type', 'button');
+    detailsBtn.setAttribute('data-college-id', college._id);
+    detailsBtn.textContent = 'Details';
+
+    const followBtn = document.createElement('button');
+    followBtn.className = `follow-btn ${isCollegeFollowed(college._id) ? 'followed' : ''}`;
+    followBtn.setAttribute('type', 'button');
+    followBtn.setAttribute('data-college-id', college._id);
+    followBtn.textContent = isCollegeFollowed(college._id) ? 'Following' : 'Follow';
+
+    actions.appendChild(detailsBtn);
+    actions.appendChild(followBtn);
+    card.appendChild(actions);
     collegeContainer.appendChild(card);
+  });
+  attachDetailListeners();
+  attachFollowListeners();
+}
+
+function getCollegeImageUrl(college) {
+  const query = encodeURIComponent(`${college.name || college.city || 'college'} campus`);
+  return `https://source.unsplash.com/featured/400x300/?${query}`;
+}
+
+function renderCampusPulse() {
+  const pulseGrid = document.getElementById('pulse-grid');
+  if (!pulseGrid) return;
+  if (!currentColleges.length || !currentEvents.length) {
+    pulseGrid.innerHTML = '<div class="pulse-card"><h4>No campus data yet</h4><p>Wait for colleges and events to load.</p></div>';
+    return;
+  }
+
+  const counts = currentEvents.reduce((acc, event) => {
+    const key = event.college || 'Unknown';
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
+  const pulseItems = currentColleges
+    .map(college => ({
+      college,
+      eventCount: counts[college.name] || 0
+    }))
+    .sort((a, b) => b.eventCount - a.eventCount || a.college.name.localeCompare(b.college.name))
+    .slice(0, 3);
+
+  pulseGrid.innerHTML = '';
+  pulseItems.forEach(item => {
+    const card = document.createElement('article');
+    card.className = 'pulse-card';
+    card.innerHTML = `
+      <h4>${item.college.name}</h4>
+      <p>${item.college.city}, ${item.college.state}</p>
+      <p>${item.eventCount > 0 ? item.eventCount + ' active event(s) happening now' : 'No active events currently'}</p>
+      <div class="pulse-meta">
+        <span class="pulse-badge">${item.eventCount >= 2 ? 'Trending' : 'Discover'}</span>
+        <button type="button" class="pulse-btn" data-college-id="${item.college._id}" aria-label="View details for ${item.college.name}">View</button>
+      </div>
+    `;
+
+    card.querySelector('.pulse-btn')?.addEventListener('click', () => {
+      renderCollegeList([item.college]);
+    });
+
+    pulseGrid.appendChild(card);
+  });
+}
+
+function showDetailModal(title, bodyHtml) {
+  if (!detailModal || !detailTitle || !detailBody) return;
+  detailTitle.textContent = title || 'Details';
+  detailBody.innerHTML = bodyHtml || '<p>No details available.</p>';
+  detailModal.classList.add('show');
+}
+
+function hideDetailModal() {
+  detailModal?.classList.remove('show');
+}
+
+function getEventDetailHtml(event) {
+  return `
+    <div class="detail-panel">
+      <p>${event.description || 'No detailed description is available for this event.'}</p>
+      <ul class="detail-list">
+        <li><strong>College:</strong> ${event.college || 'Unknown'}</li>
+        <li><strong>Location:</strong> ${event.location || 'Unknown'}</li>
+        <li><strong>Date:</strong> ${formatDate(event.date)}</li>
+        <li><strong>Category:</strong> ${event.category || 'General'}</li>
+        <li><strong>Registration:</strong> ${event.registrationLink ? `<a href="${normalizeRegistrationLink(event.registrationLink)}" target="_blank">Open registration</a>` : 'Not available'}</li>
+      </ul>
+    </div>
+  `;
+}
+
+function getCollegeDetailHtml(college) {
+  return `
+    <div class="detail-panel">
+      <p>${college.description || 'Explore this college for events, programs, and campus opportunities.'}</p>
+      <ul class="detail-list">
+        <li><strong>Name:</strong> ${college.name || 'Unknown'}</li>
+        <li><strong>City:</strong> ${college.city || 'Unknown'}</li>
+        <li><strong>State:</strong> ${college.state || 'Unknown'}</li>
+        <li><strong>Coordinates:</strong> ${college.latitude != null && college.longitude != null ? `${college.latitude.toFixed(4)}, ${college.longitude.toFixed(4)}` : 'Not available'}</li>
+      </ul>
+    </div>
+  `;
+}
+
+function attachDetailListeners() {
+  document.querySelectorAll('.details-btn[data-event-id]').forEach(btn => {
+    const eventId = btn.getAttribute('data-event-id');
+    const handler = () => {
+      const event = currentEvents.find(item => item._id === eventId);
+      if (event) {
+        showDetailModal(event.title, getEventDetailHtml(event));
+      }
+    };
+    btn.removeEventListener('click', btn._detailHandler);
+    btn.addEventListener('click', handler);
+    btn._detailHandler = handler;
+  });
+
+  document.querySelectorAll('.details-btn[data-college-id]').forEach(btn => {
+    const collegeId = btn.getAttribute('data-college-id');
+    const handler = () => {
+      const college = currentColleges.find(item => item._id === collegeId);
+      if (college) {
+        showDetailModal(college.name, getCollegeDetailHtml(college));
+      }
+    };
+    btn.removeEventListener('click', btn._detailHandler);
+    btn.addEventListener('click', handler);
+    btn._detailHandler = handler;
   });
 }
 
@@ -469,13 +856,26 @@ function initMapCallback() {
 floatingBtn?.addEventListener('click', () => modal?.classList.add('show'));
 modalClose?.addEventListener('click', () => modal?.classList.remove('show'));
 modal?.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('show'); });
+detailModalClose?.addEventListener('click', hideDetailModal);
+detailModal?.addEventListener('click', e => { if (e.target === detailModal) hideDetailModal(); });
 searchBtn?.addEventListener('click', () => {
-  const query = searchInput?.value.trim().toLowerCase() || '';
-  if (!query) return renderEventListings(currentEvents);
-  const filtered = currentEvents.filter(event => {
-    return event.title.toLowerCase().includes(query) || event.college.toLowerCase().includes(query) || event.location.toLowerCase().includes(query);
-  });
-  renderEventListings(filtered);
+  performSearch(searchInput?.value || '');
+});
+searchInput?.addEventListener('input', e => {
+  performSearch(e.target.value);
+});
+searchInput?.addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    performSearch(searchInput?.value || '');
+  }
+});
+document.getElementById('close-results')?.addEventListener('click', () => {
+  const resultsContainer = document.getElementById('search-results');
+  if (resultsContainer) resultsContainer.style.display = 'none';
+  searchInput.value = '';
+  renderEventListings(currentEvents);
+  renderCampusPulse();
 });
 
 eventForm?.addEventListener('submit', async e => {
@@ -526,5 +926,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadUser();
   await loadEvents();
   await loadColleges();
+  initializeFeatureActions();
+  initializeMessageInteractions();
+  renderCampusPulse();
+  document.getElementById('pulse-refresh-btn')?.addEventListener('click', renderCampusPulse);
   document.getElementById('logout-btn')?.addEventListener('click', logout);
 });
